@@ -1,4 +1,4 @@
-# 💬 Java Multi-Threaded Chat Server
+# Java Multi-Threaded Chat Server
 
 > Uma aplicação de Chat Cliente-Servidor robusta, desenvolvida em Java, focada em performance e experiência do usuário com interface gráfica.
 
@@ -12,7 +12,7 @@
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <div align="center">
   <img src="Chat.PNG" alt="Interface do Chat" width="600" />
@@ -20,22 +20,22 @@
 
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
 O sistema foi projetado para ser escalável e seguro, implementando:
 
 | Recurso | Descrição |
 | :--- | :--- |
-| 🌐 **Arquitetura** | Comunicação estável via **Sockets TCP/IP**. |
-| ⚡ **Thread Pool** | Uso de `ExecutorService` para gerenciar até 50 conexões simultâneas sem travar o servidor. |
-| 🖥️ **Interface Gráfica** | Cliente com **Java Swing**, eliminando a necessidade de terminal para o usuário final. |
-| 📢 **Broadcast** | Mensagens enviadas são replicadas instantaneamente para todos na sala. |
-| 🔒 **Privacidade** | Comando `/msg` para enviar mensagens privadas e sigilosas. |
-| 🛡️ **Thread-Safety** | Blocos `synchronized` protegem a lista de usuários contra condições de corrida (*Race Conditions*). |
+| **Arquitetura** | Comunicação estável via **Sockets TCP/IP**. |
+| **Thread Pool** | Uso de `ExecutorService` para gerenciar até 50 conexões simultâneas sem travar o servidor. |
+| **Interface Gráfica** | Cliente com **Java Swing**, eliminando a necessidade de terminal para o usuário final. |
+| **Broadcast** | Mensagens enviadas são replicadas instantaneamente para todos na sala. |
+| **Privacidade** | Comando `/msg` para enviar mensagens privadas e sigilosas. |
+| **Thread-Safety** | Blocos `synchronized` protegem a lista de usuários contra condições de corrida (*Race Conditions*). |
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 <div align="left">
   <img src="https://img.shields.io/badge/Java-JDK-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
@@ -46,10 +46,10 @@ O sistema foi projetado para ser escalável e seguro, implementando:
 
 ---
 
-## 📂 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```text
-📁 src
+src
 ├── ServidorChat.java          # Classe principal (Main) do servidor e Thread Pool
 ├── ClienteGUI.java            # Interface Gráfica (Swing) do cliente
 ├── AtendenteCliente.java      # Lógica (Runnable) de cada conexão no servidor
@@ -59,7 +59,7 @@ O sistema foi projetado para ser escalável e seguro, implementando:
 
 ---
 
-## ⚙️ Como Executar
+## Como Executar
 
 ### Pré-requisitos
 Certifique-se de ter o [Java JDK](https://www.oracle.com/java/technologies/downloads/) instalado.
@@ -87,7 +87,7 @@ java ClienteGUI
 
 ---
 
-## 🎮 Comandos do Chat
+## Comandos do Chat
 
 | Ação | Comando / Sintaxe |
 | :--- | :--- |
@@ -97,7 +97,7 @@ java ClienteGUI
 
 ---
 
-## 🧠 Destaques Técnicos
+## Destaques Técnicos
 
 Este projeto explorou conceitos avançados de sistemas distribuídos:
 
