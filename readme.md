@@ -1,21 +1,30 @@
 # Java Multi-Threaded Chat Server
 
-> Uma aplicação de Chat Cliente-Servidor robusta, desenvolvida em Java, focada em performance e experiência do usuário com interface gráfica.
+> **Uma exploração prática de programação concorrente, sockets TCP e arquitetura de sistemas distribuídos.**
 
 <div align="center">
 
-  ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
-  ![Swing](https://img.shields.io/badge/Java_Swing-%23ED8B00.svg?style=for-the-badge&logo=java&logoColor=white)
-  ![Socket](https://img.shields.io/badge/Socket-TCP-blue?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Swing](https://img.shields.io/badge/Java_Swing-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+![Socket](https://img.shields.io/badge/Socket-TCP-007396?style=for-the-badge&logo=gnu-bash&logoColor=white)
+![Concurrency](https://img.shields.io/badge/Concurrency-Threads-4CAF50?style=for-the-badge&logoColor=white)
 
 </div>
+
+---
+
+## Sobre o Projeto
+
+Este projeto é uma **implementação robusta de um sistema de Chat Cliente-Servidor**, desenvolvida para demonstrar o domínio sobre conceitos fundamentais de engenharia de software como **Multithreading**, **Sincronização de Threads**, **Gerenciamento de Recursos** e **UI/UX com Swing**.
+
+O objetivo não é apenas criar um chat, mas sim construir uma arquitetura resiliente capaz de lidar com múltiplas conexões simultâneas sem bloqueios (non-blocking issues) ou condições de corrida (race conditions). Ideal para estudos de caso em **Sistemas Distribuídos** e **Redes de Computadores**.
 
 ---
 
 ## Screenshots
 
 <div align="center">
-  <img src="Chat.PNG" alt="Interface do Chat" width="600" />
+  <img src="Chat.PNG" alt="Interface do Chat Clean e Responsiva" width="700" style="border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);" />
 </div>
 
 ---
@@ -34,15 +43,60 @@ O sistema foi projetado para ser escalável e seguro, implementando:
 | **Thread-Safety** | Blocos `synchronized` protegem a lista de usuários contra condições de corrida (*Race Conditions*). |
 
 ---
+## Destaques Técnicos (Engineering Decisions)
 
-## Tecnologias Utilizadas
+Para recrutadores e desenvolvedores, aqui estão as decisões de design críticas tomadas neste projeto:
 
-<div align="left">
-  <img src="https://img.shields.io/badge/Java-JDK-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
-  <img src="https://img.shields.io/badge/Java.net-Sockets-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Java.util-Concurrent-green?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Java_Swing-GUI-red?style=for-the-badge" />
-</div>
+### 1. Robustez com `ExecutorService` (Thread Pool)
+Ao invés de criar uma nova `Thread` para cada cliente (`new Thread(runnable).start()`), o que poderia levar a um erro de *OutOfMemoryError* sob alta carga, utilizei um **Cached Thread Pool** (ou Fixed dependendo da configuração).
+*   **Por quê?** Reutilização de threads, controle do número máximo de conexões simultâneas e menor *overhead* de sistema operacional na criação/destruição de threads.
+
+### 2. Thread-Safety em Estruturas de Dados
+A lista de clientes conectados é um recurso compartilhado crítico.
+*   **Solução:** Implementação de blocos `synchronized` na classe `GerenciadorDeClientes` para garantir que operações de adição/remoção de usuários sejam atômicas. Isso previne `ConcurrentModificationException` e estados inconsistentes.
+
+### 3. Separação de Responsabilidades (EDT vs Network Thread)
+No cliente Swing, a leitura de mensagens da rede bloqueia a execução (`in.readLine()`).
+*   **Solução:** Uma Thread dedicada (`OuvinteServidor`) escuta o servidor, enquanto a **Event Dispatch Thread (EDT)** do Swing cuida apenas da atualização visual. Isso evita que a interface congele ("System not responding") durante a espera por mensagens.
+
+---
+## Arquitetura do Sistema
+
+A comunicação é baseada no modelo **TCP/IP** para garantir a entrega de pacotes. O servidor atua como um *Hub* central, gerenciando o estado de todos os clientes conectados e realizando o *Broadcast* de mensagens.
+
+```mermaid
+sequenceDiagram
+    participant C1 as Cliente A
+    participant S as Servidor (Thread Pool)
+    participant C2 as Cliente B
+    
+    C1->>S: Conexão (TCP Handshake)
+    S->>S: Aloca Thread (AtendenteCliente)
+    S-->>C1: Conexão Aceita
+    
+    C2->>S: Conexão (TCP Handshake)
+    S->>S: Aloca Thread (AtendenteCliente)
+    
+    Note over C1,C2: Troca de Mensagens em Tempo Real
+    
+    C1->>S: Envia Mensagem "Olá!"
+    par Broadcast
+        S->>C1: Recebe "Cliente A: Olá!"
+        S->>C2: Recebe "Cliente A: Olá!"
+    end
+```
+
+---
+
+---
+
+## Tecnologias
+
+*   **Linguagem:** Java (JDK 8+)
+*   **Interface:** Java Swing (JFrame, JPanel, JScrollPane)
+*   **Rede:** `java.net.Socket`, `java.net.ServerSocket`
+*   **IO:** `java.io.PrintWriter`, `java.io.BufferedReader`
+*   **Concorrência:** `java.util.concurrent.ExecutorService`, `synchronized`
 
 ---
 
@@ -95,13 +149,3 @@ java ClienteGUI
 | **Mensagem Privada** | `/msg [Nome] [Mensagem]` <br> *Ex: `/msg Guilherme Olá, tudo bem?`* |
 | **Sair** | Digite `sair` ou feche a janela. |
 
----
-
-## Destaques Técnicos
-
-Este projeto explorou conceitos avançados de sistemas distribuídos:
-
-* **Sockets & TCP Handshake:** Estabelecimento manual de conexão confiável entre processos distintos.
-* **Multithreading vs Thread Pool:** Substituição da criação infinita de `new Thread()` pelo uso de `FixedThreadPool`, garantindo reutilização de recursos e protegendo o servidor contra sobrecarga de memória.
-* **Sincronização (Monitores):** Uso estratégico de `synchronized` na classe `GerenciadorDeClientes` para evitar que múltiplas threads corrompam o Mapa de usuários conectados.
-* **Event Dispatch Thread (EDT):** Separação correta entre a Thread de rede (que ouve mensagens) e a Thread do Swing (que desenha a tela), evitando que a interface congele.
